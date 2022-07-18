@@ -15,11 +15,11 @@
 -  [03.oop.u6. Interfaces](https://youtu.be/JGgKbMcDnOo)
 ## Task #3
 Before start creating source code, read carefully all materials about OOP. It is not only 3 principles for interview;)
-Store functionality should be based on above principles.
+by.issoft.store.Store functionality should be based on above principles.
 Classes to create:
 - `Product` with such attributes as [name, rate, price]
 - `Category` classes with the `name` attribute, for each store category [bike, phone, milk] and `products list`
-- `Store` - class that should handle `category list`
+- `by.issoft.store.Store` - class that should handle `category list`
 - `RandomStorePopulator` - utility class that will populate out store/category with fake data using `Faker` lib
 - `StoreApp` - class with main method to execute our store scenario.
 When invoke main method, application should init store with categories and products and `pretty` print this data.
@@ -29,9 +29,9 @@ Also, categories should be read dynamically (at runtime), from base category pac
 ## Hints and FAQs
 ### Where to put classes?
 Classes have to be put in relevant modules:
-- `StoreApp` → `consoleApp`. `consoleApp` module contains only class `StoreApp` with `main()` method, which `creates` instance of `Store`, fill created store with `Products` and prints all the categories and all the products. The main purpose of this module is to run the store.
+- `StoreApp` → `consoleApp`. `consoleApp` module contains only class `StoreApp` with `main()` method, which `creates` instance of `by.issoft.store.Store`, fill created store with `Products` and prints all the categories and all the products. The main purpose of this module is to run the store.
 - `Product`, `Category`, `BikeCategory`, `PhoneCategory`, `MilkCategory` → `domain`. `domain` module contains only domain classes. The content of this module answers the question: "What is contained in the store?" In addition to products and product categories, in the future we could put such domain classes as `User`, `Admin`, `Cart` and so on here.
-- `Store`, `RandomStorePopulator` → `store`. `store` module contains all the business logic. The content of this module answers the question: "How is the business logic implemented?" In the future, there may be interfaces here. Database connection logic and so on. Perhaps now it makes sense to think about creating auxiliary classes `StoreHelper`, into which we will transfer part of the business logic from `Store`. In order our `Store` class to comply with the `SingleResponsibility` principle and not contain many methods loosely related to each other.
+- `by.issoft.store.Store`, `RandomStorePopulator` → `store`. `store` module contains all the business logic. The content of this module answers the question: "How is the business logic implemented?" In the future, there may be interfaces here. Database connection logic and so on. Perhaps now it makes sense to think about creating auxiliary classes `StoreHelper`, into which we will transfer part of the business logic from `by.issoft.store.Store`. In order our `by.issoft.store.Store` class to comply with the `SingleResponsibility` principle and not contain many methods loosely related to each other.
 ### Packages
 The names of packages in modules can be as follows:
 `by.issoft.consoleApp`, `by.issoft.domain`, `by.issoft.store`. Further inside each of the modules, we can choose the grouping that is convenient for us. For example, child categories can be grouped in the `by.issoft.domain.categories` package. Be creative and use common sense.
