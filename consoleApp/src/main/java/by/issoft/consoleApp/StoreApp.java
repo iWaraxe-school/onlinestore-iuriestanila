@@ -1,19 +1,14 @@
 package by.issoft.consoleApp;
 
-import by.issoft.domain.Product;
 import by.issoft.store.Store;
-import utils.RandomStorePopulator;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-
+import by.issoft.store.StoreHelper;
 
 public class StoreApp {
-    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public static void main(String[] args) {
 
-        Store store = RandomStorePopulator.generateData();
-
+        Store store = new Store();
+        StoreHelper storeHelper = new StoreHelper(store);
+        storeHelper.populateTheStore();
         System.out.println(store);
     }
 }
