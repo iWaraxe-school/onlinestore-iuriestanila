@@ -3,6 +3,9 @@ package by.issoft.store;
 import by.issoft.domain.Category;
 import by.issoft.domain.Product;
 import org.reflections.Reflections;
+import parsing.SortByProductName;
+import parsing.SortByProductPrice;
+import parsing.SortByProductRate;
 import parsing.XmlParser;
 import utils.RandomStorePopulator;
 
@@ -67,8 +70,29 @@ public class StoreHelper {
                 "onlinestore-iuriestanila\\store\\src\\main" +
                 "\\resources\\config.xml");
 
-        Comparator<Product> comparator = Comparator.comparing(Product::getName).
-                thenComparing(Product::getPrice).thenComparing(Product::getRate).reversed();
+        List<Product> productsForSorting = new ArrayList<>();
+
+        for(Category category: store.getCategories()){
+            for(Product product: category.getProducts()){
+                productsForSorting.add(product);
+            }
+        }
+        productsForSorting.sort(new SortByProductName());
+
+        System.out.println("\nSorting by name:\n ");
+        productsForSorting.stream().forEach(product -> System.out.println(product.getInfoProduct()));
+
+
+        System.out.println("\nSorting by price:\n ");
+        productsForSorting.sort(new SortByProductPrice());
+        productsForSorting.stream().forEach(product -> System.out.println(product.getInfoProduct()));
+
+        System.out.println("\nSorting By rate:\n");
+        productsForSorting.sort(new SortByProductRate());
+        productsForSorting.stream().forEach(product -> System.out.println(product.getInfoProduct()));
+
+//        Comparator<Product> comparator = Comparator.comparing(Product::getName).
+//                thenComparing(Product::getPrice).thenComparing(Product::getRate).reversed();
 
         // Collections.sort(store,comparator);
     }

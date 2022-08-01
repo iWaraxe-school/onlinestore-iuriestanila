@@ -7,7 +7,6 @@ import java.util.Scanner;
 
 public class StoreApp {
     public static void main(String[] args) {
-
         Store store = new Store();
         StoreHelper storeHelper = new StoreHelper(store);
         storeHelper.populateTheStore();
@@ -15,7 +14,7 @@ public class StoreApp {
 
         while(true){
             Scanner sc = new Scanner(System.in);
-            System.out.println("Enter your command: ");
+            System.out.println("\nEnter your command: ");
             String str = sc.nextLine();
 
             if(str.equals("quit")){
