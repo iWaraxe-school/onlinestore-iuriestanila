@@ -3,17 +3,18 @@ package by.issoft.store;
 import by.issoft.domain.Category;
 import by.issoft.domain.Product;
 import org.reflections.Reflections;
+import parsing.XmlParser;
 import utils.RandomStorePopulator;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class StoreHelper {
     Store store;
     public StoreHelper(Store store){
         this.store=store;
     }
+
     public void populateTheStore(){
         RandomStorePopulator populator = new RandomStorePopulator();
         Set<Category> categorySet = getReflectionsInstances();
@@ -46,5 +47,29 @@ public class StoreHelper {
             }
         }
         return categorySet;
+    }
+
+    public void showTopXProducts(Store store, int limit) {
+        List<Product> allProducts = new ArrayList<Product>();
+
+        for(Category category : store.getCategories()){
+            for(Product product : category.getProducts()){
+                allProducts.add(product);
+            }
+        }
+
+        allProducts.stream().sorted(Comparator.comparing(Product::getPrice).
+                reversed()).limit(limit).forEach(product -> System.out.println(product.getInfoProduct()));
+    }
+
+    public static void sortProducts(Store store) {
+        Map<String, String> linkedHMapConfig = XmlParser.parse("C:\\Users\\IurieStanila\\IdeaProjects\\" +
+                "onlinestore-iuriestanila\\store\\src\\main" +
+                "\\resources\\config.xml");
+
+        Comparator<Product> comparator = Comparator.comparing(Product::getName).
+                thenComparing(Product::getPrice).thenComparing(Product::getRate).reversed();
+
+        // Collections.sort(store,comparator);
     }
 }
