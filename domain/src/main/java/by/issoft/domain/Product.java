@@ -3,9 +3,9 @@ package by.issoft.domain;
 public class Product {
     private String name;
     private int rate;
-    private String price;
+    private int price;
 
-    public Product(String name, int rate, String price) {
+    public Product(String name, int rate, int price) {
         this.name = name;
         this.rate = rate;
         this.price = price;
@@ -27,11 +27,11 @@ public class Product {
         this.rate = rate;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

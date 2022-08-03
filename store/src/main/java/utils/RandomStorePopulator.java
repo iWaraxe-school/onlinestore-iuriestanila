@@ -17,8 +17,8 @@ public class RandomStorePopulator {
       }
    }
 
-   public String  getProductPrice() {
-      return faker.commerce().price();
+   public int  getProductPrice() {
+      return faker.number().randomDigit();
    }
 
    public int getProductRate(){

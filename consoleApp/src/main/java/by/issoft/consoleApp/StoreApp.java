@@ -3,6 +3,9 @@ package by.issoft.consoleApp;
 import by.issoft.store.Store;
 import by.issoft.store.StoreHelper;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class StoreApp {
@@ -12,22 +15,30 @@ public class StoreApp {
         storeHelper.populateTheStore();
         //System.out.println(store);
 
-        while(true){
-            Scanner sc = new Scanner(System.in);
-            System.out.println("\nEnter your command: ");
-            String str = sc.nextLine();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-            if(str.equals("quit")){
-                break;
-            }
-            if(str.equals("top")){
-                storeHelper.showTopXProducts(store,5);
-            }
-            if(str.equals("print")){
-                System.out.println(store);
-            }
-            if(str.equals("sort")){
-                storeHelper.sortProducts(store);
+        Boolean flag = true;
+
+        while (flag){
+            System.out.println("\nEnter the command sort, top or quit: ");
+            try {
+                String command = reader.readLine();
+
+                switch (command){
+                    case "sort":
+                        storeHelper.sortProducts(store);
+                        break;
+                    case "top":
+                        storeHelper.showTopXProducts(store,5);
+                        break;
+                    case "quit":
+                        flag = false;
+                        break;
+                    default:
+                        System.out.println("The entered command does not exist.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
