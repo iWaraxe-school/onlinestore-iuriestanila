@@ -6,6 +6,9 @@ import org.reflections.Reflections;
 import parsing.XmlParser;
 import utils.RandomStorePopulator;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -14,6 +17,9 @@ public class StoreHelper {
 
     public StoreHelper(Store store) {
         this.store = store;
+    }
+    public StoreHelper(){
+
     }
 
     public void populateTheStore() {
@@ -51,7 +57,7 @@ public class StoreHelper {
         return categorySet;
     }
 
-    public void showTopXProducts(Store store, int limit) {
+    public void showTop5Products(Store store) {
         List<Product> allProducts = new ArrayList<Product>();
 
         for (Category category : store.getCategories()) {
@@ -60,7 +66,7 @@ public class StoreHelper {
             }
         }
         allProducts.stream().sorted(Comparator.comparing(Product::getPrice).
-                reversed()).limit(limit).forEach(product -> System.out.println(product.getInfoProduct()));
+                reversed()).limit(5).forEach(product -> System.out.println(product.getInfoProduct()));
     }
 
     public static void sortProducts(Store store) {
@@ -131,5 +137,34 @@ public class StoreHelper {
 
         System.out.println("\nAll the sorted products:");
         productsToSort.stream().forEach(product -> System.out.println(product.getInfoProduct()));
+    }
+
+    public void storeInteraction(){
+        StoreHelper storeHelper = new StoreHelper();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        Boolean flag = true;
+        while (flag){
+            System.out.println("\nEnter the command sort, top or quit: ");
+            try {
+                String command = reader.readLine();
+
+                switch (command){
+                    case "sort":
+                        storeHelper.sortProducts(store);
+                        break;
+                    case "top":
+                        storeHelper.showTop5Products(store);
+                        break;
+                    case "quit":
+                        flag = false;
+                        break;
+                    default:
+                        System.out.println("The entered command does not exist.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

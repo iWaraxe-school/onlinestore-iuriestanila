@@ -8,6 +8,17 @@ import java.util.List;
 public class Store {
    List<Category> categories = new ArrayList<Category>();
 
+    private Store(){
+    }
+
+    private static class createStoreInstance {
+        private static final Store storeInstance = new Store();
+    }
+
+    public static Store getStoreInstance(){
+        return createStoreInstance.storeInstance;
+    }
+
     public List<Category> getCategories() {
         return categories;
     }
