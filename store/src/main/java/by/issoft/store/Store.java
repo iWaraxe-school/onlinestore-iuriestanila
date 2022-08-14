@@ -34,7 +34,7 @@ public class Store {
         for(Category category: getCategories()){
             sb.append(category.getName()+"\n");
             for(Product product: category.getProducts()){
-                sb.append("\t"+product.getInfoProduct()+"\n");
+                sb.append("\t"+product+"\n");
             }
         }
         return sb.toString();

@@ -35,7 +35,8 @@ public class Product {
         this.price = price;
     }
 
-    public String getInfoProduct() {
+    @Override
+    public String toString() {
         return "Product "+name+", rate: "+rate+", price: "+price;
     }
 }
