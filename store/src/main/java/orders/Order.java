@@ -1,28 +1,33 @@
 package orders;
 
 import by.issoft.domain.Product;
+import lombok.SneakyThrows;
 
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
-public class Order {
-    private CopyOnWriteArrayList<Product> products = new CopyOnWriteArrayList<>();
-    private  CopyOnWriteArrayList<Product> purchasedProducts = new CopyOnWriteArrayList<>();
-    private Order(){
+public class Order implements Runnable {
+    private  CopyOnWriteArrayList<Product> purchasedProducts;
+    private Product foundOrderedProduct;
+
+    public Order(Product foundOrderedProduct,CopyOnWriteArrayList<Product> purchasedProducts) {
+        this.foundOrderedProduct = foundOrderedProduct;
+        this.purchasedProducts = purchasedProducts;
     }
 
-    private static class createOrderInstance {
-        private static final Order OrderInstance = new Order();
-    }
+    @SneakyThrows
+    @Override
+    public void run() {
+        Random random = new Random();
+        System.out.println("Executing task 1: " + Thread.currentThread().getName());
+        final int randomTime = random.nextInt(2) + 1; //3
 
-    public static Order getOrderInstance(){
-        return Order.createOrderInstance.OrderInstance;
-    }
+        TimeUnit.SECONDS.sleep(randomTime);
+        System.out.println("After maximum 30 seconds the product will be put in a list of purchased products.");
+        purchasedProducts.add(foundOrderedProduct);
 
-    public CopyOnWriteArrayList<Product> getProducts() {
-        return products;
-    }
-
-    public CopyOnWriteArrayList<Product> getPurchasedProducts() {
-        return purchasedProducts;
+        System.out.println("\nDear customer you have purchased following products:");
+        purchasedProducts.stream().forEach(e -> System.out.println(e));
     }
 }
