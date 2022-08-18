@@ -24,7 +24,7 @@ public class Order implements Runnable {
         final int randomTime = random.nextInt(2) + 1; //3
 
         TimeUnit.SECONDS.sleep(randomTime);
-        System.out.println("After maximum 30 seconds the product will be put in a list of purchased products.");
+        System.out.println("After maximum 3 seconds the product will be put in a list of purchased products.");
         purchasedProducts.add(foundOrderedProduct);
 
         System.out.println("\nDear customer you have purchased following products:");

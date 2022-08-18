@@ -82,7 +82,7 @@ public class StoreHelper {
     public static void sortProducts(Store store) {
         Map<String, String> mapConfig = XmlParser.parse("C:\\Users\\IurieStanila\\IdeaProjects\\" +
                 "onlinestore-iuriestanila\\store\\src\\main" +
-                "\\resources\\config.xml");
+                "\\java\\resources\\config.xml");
 
         List<Product> productsToSort = new ArrayList<Product>();
 
