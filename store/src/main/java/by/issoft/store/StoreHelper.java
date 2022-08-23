@@ -2,6 +2,8 @@ package by.issoft.store;
 
 import by.issoft.domain.Category;
 import by.issoft.domain.Product;
+import com.sun.org.apache.xpath.internal.operations.Or;
+import lombok.SneakyThrows;
 import orders.Cleaner;
 import orders.Order;
 import org.reflections.Reflections;
@@ -20,8 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 public class StoreHelper {
     Store store;
-    Order order = Order.getOrderInstance();
+    Order order;
     ExecutorService executorService = Executors.newFixedThreadPool(3);
+    private CopyOnWriteArrayList<Product> purchasedProducts;
 
     public StoreHelper(Store store) {
         this.store = store;
@@ -79,7 +82,7 @@ public class StoreHelper {
     public static void sortProducts(Store store) {
         Map<String, String> mapConfig = XmlParser.parse("C:\\Users\\IurieStanila\\IdeaProjects\\" +
                 "onlinestore-iuriestanila\\store\\src\\main" +
-                "\\resources\\config.xml");
+                "\\java\\resources\\config.xml");
 
         List<Product> productsToSort = new ArrayList<Product>();
 
@@ -146,29 +149,11 @@ public class StoreHelper {
         productsToSort.stream().forEach(product -> System.out.println(product));
     }
 
-
     public void createOrder(String orderedProduct){
         Product foundOrderedProduct = findOrderedProduct(orderedProduct);
-        Random random = new Random();
+        Order order = new Order(foundOrderedProduct, purchasedProducts);
 
-        executorService.execute(()-> {
-            // dupa asta de scos
-            System.out.println(Thread.currentThread().getName());
-
-            final int randomTime = random.nextInt(31 - 1) + 1;
-
-            try {
-                TimeUnit.SECONDS.sleep(randomTime);
-                CopyOnWriteArrayList<Product> purchasedProducts = order.getPurchasedProducts();
-                purchasedProducts.add(foundOrderedProduct);
-
-                System.out.println("Purchased products");
-                printPurchasedProducts(purchasedProducts);
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
+        executorService.submit(order);
     }
 
     public void shutDownExecutor(){
@@ -181,7 +166,6 @@ public class StoreHelper {
 
         for(Category category : store.getCategories()){
             for(Product product : category.getProducts()){
-                System.out.println(product);
                 if(product.getName().equals(orderedProduct)){
                     foundProduct = product;
                 }
@@ -194,35 +178,55 @@ public class StoreHelper {
         purchasedProducts.stream().forEach(e-> System.out.println(e));
     }
 
-    public void cleanPurchasedProducts(){
-        Timer timer = new Timer();
-        timer.schedule(new Cleaner(), 2000);
-    }
-
     public void storeInteraction(){
-        StoreHelper storeHelper = new StoreHelper();
+        List<Product> products = new ArrayList<>();
+        purchasedProducts = new CopyOnWriteArrayList<>();
+
+        Cleaner cleaner = new Cleaner(purchasedProducts);
+
+            Timer timer = new Timer();
+            timer.schedule(cleaner, 120000,120000);
+
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        for (Category category : store.getCategories()) {
+            for (Product product : category.getProducts()) {
+                products.add(product);
+            }
+        }
 
         Boolean flag = true;
         while (flag){
-            System.out.println("\nEnter the command sort, top, order or quit: ");
+            System.out.println("Dear customer enter the command sort, top, order or quit: ");
             try {
                 String command = reader.readLine();
 
                 switch (command){
                     case "sort":
-                        storeHelper.sortProducts(store);
+                        sortProducts(store);
                         break;
                     case "top":
-                        storeHelper.showTop5Products(store);
+                        showTop5Products(store);
                         break;
                     case "order":
-                        System.out.println("Which product do you want to order?: ");
-                        String orderedProduct = reader.readLine();
-                        storeHelper.createOrder(orderedProduct);
+                        boolean flag2 = true;
+                        while(flag2) {
+                            System.out.println("Which product do you want to order? " +
+                                    "For quitting the ordering please enter stop.");
+                            String orderedProduct = reader.readLine();
+                            if(products.stream().anyMatch(p -> p.getName().equals(orderedProduct))){
+                                createOrder(orderedProduct);
+                            }
+                            else if(orderedProduct.equalsIgnoreCase("stop")) {
+                                flag2 = false;
+                                executorService.shutdown();
+                            }
+                        }
                     case "quit":
                         flag = false;
                         executorService.shutdown();
+                        timer.cancel();
                         break;
                     default:
                         System.out.println("The entered command does not exist.");
