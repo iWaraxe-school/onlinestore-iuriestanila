@@ -30,7 +30,7 @@ public class Store {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Store contents:\n ");
+        sb.append("\nStore contents:\n ");
         for(Category category: getCategories()){
             sb.append(category.getName()+"\n");
             for(Product product: category.getProducts()){

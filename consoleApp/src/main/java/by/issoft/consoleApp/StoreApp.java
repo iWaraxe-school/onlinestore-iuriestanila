@@ -10,10 +10,8 @@ import java.util.Scanner;
 
 public class StoreApp {
     public static void main(String[] args) {
-        Store store = Store.getStoreInstance();
-        StoreHelper storeHelper = new StoreHelper(store);
-        storeHelper.populateTheStore();
-        System.out.println(store);
-        storeHelper.storeInteraction();
+        StoreHelper storeHelper = new StoreHelper();
+        storeHelper.interactionDatabaseOrReflections();
+        storeHelper.storeInteractionSortOrderTop();
     }
 }
