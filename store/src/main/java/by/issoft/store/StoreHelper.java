@@ -2,8 +2,8 @@ package by.issoft.store;
 
 import by.issoft.domain.Category;
 import by.issoft.domain.Product;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import database.DatabaseHelper;
+import http.Server;
 import lombok.SneakyThrows;
 import orders.Cleaner;
 import orders.Order;
@@ -26,12 +26,14 @@ public class StoreHelper {
     Store store;
     Order order;
     Connection connection;
+    Server server;
     ExecutorService executorService = Executors.newFixedThreadPool(3);
     private CopyOnWriteArrayList<Product> purchasedProducts;
 
-    public StoreHelper(){
+    public StoreHelper() {
     }
-    public StoreHelper(Store store){
+
+    public StoreHelper(Store store) {
     }
 
     public void populateTheStoreReflections() {
@@ -145,24 +147,20 @@ public class StoreHelper {
         productsToSort.stream().forEach(product -> System.out.println(product));
     }
 
-    public void createOrder(String orderedProduct){
+    public void createOrder(String orderedProduct) {
         Product foundOrderedProduct = findOrderedProduct(orderedProduct);
         Order order = new Order(foundOrderedProduct, purchasedProducts);
 
         executorService.submit(order);
     }
 
-    public void shutDownExecutor(){
-        executorService.shutdown();
-    }
-
     public Product findOrderedProduct(String orderedProduct) {
         Store store = Store.getStoreInstance();
         Product foundProduct = null;
 
-        for(Category category : store.getCategories()){
-            for(Product product : category.getProducts()){
-                if(product.getName().equals(orderedProduct)){
+        for (Category category : store.getCategories()) {
+            for (Product product : category.getProducts()) {
+                if (product.getName().equals(orderedProduct)) {
                     foundProduct = product;
                 }
             }
@@ -170,19 +168,16 @@ public class StoreHelper {
         return foundProduct;
     }
 
-    public void printPurchasedProducts(CopyOnWriteArrayList<Product> purchasedProducts){
-        purchasedProducts.stream().forEach(e-> System.out.println(e));
-    }
 
     @SneakyThrows
-    public void storeInteractionSortOrderTop(){
+    public void storeInteractionSortOrderTop() {
         List<Product> products = new ArrayList<>();
         purchasedProducts = new CopyOnWriteArrayList<>();
 
         Cleaner cleaner = new Cleaner(purchasedProducts);
 
         Timer timer = new Timer();
-        timer.schedule(cleaner, 120000,120000);
+        timer.schedule(cleaner, 120000, 120000);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -193,12 +188,12 @@ public class StoreHelper {
         }
 
         Boolean flag = true;
-        while (flag){
-            System.out.println("\n"+"Dear customer enter the command sort, top, order or quit: ");
+        while (flag) {
+            System.out.println("\n" + "Dear customer enter the command sort, top, order or quit: ");
 
             String command = reader.readLine();
 
-            switch (command){
+            switch (command) {
                 case "sort":
                     sortProducts(store);
                     break;
@@ -207,16 +202,15 @@ public class StoreHelper {
                     break;
                 case "order":
                     boolean flag2 = true;
-                    while(flag2) {
+                    while (flag2) {
                         System.out.println("Which product do you want to order from " +
                                 "the following products of the Store? " +
                                 "For quitting the order please enter stop.");
                         System.out.println(store);
                         String orderedProduct = reader.readLine();
-                        if(products.stream().anyMatch(p -> p.getName().equals(orderedProduct))){
+                        if (products.stream().anyMatch(p -> p.getName().equals(orderedProduct))) {
                             createOrder(orderedProduct);
-                        }
-                        else if(orderedProduct.equalsIgnoreCase("stop")) {
+                        } else if (orderedProduct.equalsIgnoreCase("stop")) {
                             flag2 = false;
                             executorService.shutdown();
                         }
@@ -233,27 +227,55 @@ public class StoreHelper {
     }
 
     @SneakyThrows
-    public void interactionDatabaseOrReflections(){
+    public void interaction_Database_Reflections_Http() {
+        server = new Server();
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-        Boolean flag = true;
-        System.out.println("\n"+"Loading data trough reflections or from database? " +
-                "Please enter reflections or database: ");
+        boolean flag = true;
+        while (flag) {
+            System.out.println("Loading data trough reflections, from database or for http operations? " +
+                    "\nPlease enter reflections, database or http: ");
 
-        String command = reader.readLine();
-        switch (command){
-            case "reflections":
-                populateTheStoreReflections();
-                break;
-            case "database":
-                populateTheStoreDataBase();
-                System.out.println("This is the store from the database:"+store);
-                break;
-            default:
-                System.out.println("The entered command does not exist.");
+            String command = reader.readLine();
+            switch (command) {
+                case "reflections":
+                    populateTheStoreReflections();
+                    storeInteractionSortOrderTop();
+                    flag = false;
+                    break;
+                case "database":
+                    populateTheStoreDataBase();
+                    System.out.println("This is the store from the database:" + store);
+                    storeInteractionSortOrderTop();
+                    flag = false;
+                    break;
+                case "http":
+                    populateTheStoreHttp();
+                    System.out.println("These are the products from the store:\n" + store);
+                    server.startServer();
+                    boolean flag2 = true;
+                    while(flag2){
+                        System.out.println("Whenever the operations with the ClientStore have been finished," +
+                                "\nto stop the server please enter stop.");
+                        String command2 = reader.readLine();
+                        if (command2.equals("stop")) {
+                            server.stopServer();
+                            flag2 = false;
+                        } else  {
+                            flag2 = true;
+                        }
+                    }
+                    flag = false;
+            }
         }
     }
-    private void populateTheStoreDataBase() {
+
+    private void populateTheStoreDataBase () {
         store = new DatabaseHelper().loadData();
+    }
+
+    public void populateTheStoreHttp() {
+        populateTheStoreDataBase();
     }
 }
