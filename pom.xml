@@ -15,6 +15,7 @@
         <module>domain</module>
         <module>store</module>
         <module>consoleApp</module>
+        <module>StoreClient</module>
     </modules>
 
     <dependencies>
